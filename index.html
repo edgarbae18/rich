@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>재산 증식 전략 테스트</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .question {
+            margin-bottom: 30px;
+        }
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .answer-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .answer-button {
+            padding: 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+        .answer-button:hover {
+            background-color: #2980b9;
+        }
+        .answer-button.selected {
+            background-color: #2ecc71;
+        }
+        #result {
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 30px;
+            display: none;
+        }
+        #return-button {
+            display: block;
+            width: 200px;
+            margin: 20px auto 0;
+            padding: 15px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #return-button:hover {
+            background-color: #c0392b;
+        }
+        #loading {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>재산 증식 전략 테스트</h1>
+        <div id="test-content"></div>
+        <div id="loading">출력중...</div>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const questions = [
+            "투자할 때 당신의 위험 선호도는 어떠신가요?",
+            "수입을 늘리기 위해 어떤 방법을 선호하시나요?",
+            "재정 관리에 있어서 당신의 스타일은 어떠신가요?",
+            "장기적인 재산 증식에 대한 당신의 접근 방식은?"
+        ];
+        const options = [
+            ['안전 추구', '균형 유지', '위험 감수', '고위험 고수익'],
+            ['현재 직업 집중', '부업 시도', '사업 시작', '투자 다각화'],
+            ['엄격한 예산', '유연한 지출', '자동 저축', '수입 증대 집중'],
+            ['안정적 저축', '부동산 투자', '주식 시장 활용', '다양한 자산 분산']
+        ];
+        let selectedAnswers = new Array(questions.length).fill(null);
+
+        function createTestContent() {
+            const testContent = document.getElementById('test-content');
+            testContent.innerHTML = questions.map((question, index) => `
+                <div class="question">
+                    <div class="question-text">${index + 1}. ${question}</div>
+                    <div class="answer-grid">
+                        ${options[index].map((option, optionIndex) => `
+                            <button class="answer-button" onclick="selectAnswer(${index}, ${optionIndex})">
+                                ${option}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectAnswer(questionIndex, answerIndex) {
+            selectedAnswers[questionIndex] = answerIndex + 1;
+            updateButtonStyles();
+            checkAndShowResult();
+        }
+
+        function updateButtonStyles() {
+            const buttons = document.getElementsByClassName('answer-button');
+            Array.from(buttons).forEach((button, index) => {
+                const questionIndex = Math.floor(index / 4);
+                const answerIndex = index % 4;
+                button.classList.toggle('selected', selectedAnswers[questionIndex] === answerIndex + 1);
+            });
+        }
+
+        function checkAndShowResult() {
+            if (selectedAnswers.every(answer => answer !== null)) {
+                document.getElementById('loading').style.display = 'block';
+                setTimeout(showResult, 2000); // 2초 후에 결과 표시
+            }
+        }
+
+        function showResult() {
+            const resultNumber = selectedAnswers.join('');
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <h2>당신의 재산 증식 전략 분석</h2>
+                <p>결과 코드: ${resultNumber}</p>
+                <button id="return-button" onclick="resetTest()">다시 하기</button>
+            `;
+            resultDiv.style.display = 'block';
+            document.getElementById('loading').style.display = 'none';
+
+            const buttons = document.getElementsByClassName('answer-button');
+            Array.from(buttons).forEach(button => button.disabled = true);
+        }
+
+        function resetTest() {
+            selectedAnswers = new Array(questions.length).fill(null);
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'none';
+            resultDiv.innerHTML = '';
+            createTestContent();
+            const buttons = document.getElementsByClassName('answer-button');
+            Array.from(buttons).forEach(button => button.disabled = false);
+        }
+
+        createTestContent();
+    </script>
+</body>
+</html>
